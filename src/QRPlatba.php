@@ -283,6 +283,13 @@ class QRPlatba
         return $this;
     }
 
+    public function enableInstantPayment(): self
+    {
+        $this->spdKeys['PT'] = 'IP';
+
+        return $this;
+    }
+
     /**
      * Nastavení variabilního symbolu.
      */
