@@ -87,6 +87,8 @@ class QRPlatba
         // Právě 8 znaků - Datum splatnosti YYYYMMDD.
         'MSG' => null,
         // Max. 60 znaků - Zpráva pro příjemce.
+        'PT' => null,
+        // Právě 3 znaky - Typ platby.
         'X-VS' => null,
         // Max. 10 znaků - Celé číslo - Variabilní symbol
         'X-SS' => null,
@@ -97,8 +99,6 @@ class QRPlatba
         // Max. 16 znaků - Identifikátor platby pro příjemce.
         'RN' => null,
         // Max. 35 znaků - Jméno příjemce.
-        'PT' => null,
-        // Právě 3 znaky - Typ platby.
         'CRC32' => null,
         // Právě 8 znaků - Kontrolní součet - HEX.
         'NT' => null,

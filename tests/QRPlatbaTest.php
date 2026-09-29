@@ -66,7 +66,7 @@ class QRPlatbaTest extends TestCase
 
         $this->assertSame($payment, $payment->enableInstantPayment());
         $this->assertSame(
-            'SPD*1.0*ACC:CZ6508000000192000145399*AM:1234.56*CC:CZK*X-VS:2016001234*PT:IP',
+            'SPD*1.0*ACC:CZ6508000000192000145399*AM:1234.56*CC:CZK*PT:IP*X-VS:2016001234',
             $payment->__toString()
         );
     }
