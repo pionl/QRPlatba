@@ -16,12 +16,11 @@ namespace Defr\QRPlatba;
 use DateTime;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
-use Endroid\QrCode\Label\Alignment\LabelAlignmentLeft;
-use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\Label\Label;
 use Endroid\QrCode\QrCode;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeEnlarge;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\SvgWriter;
 use Iban\Validation\Iban;
@@ -88,6 +87,8 @@ class QRPlatba
         // Právě 8 znaků - Datum splatnosti YYYYMMDD.
         'MSG' => null,
         // Max. 60 znaků - Zpráva pro příjemce.
+        'PT' => null,
+        // Právě 3 znaky - Typ platby.
         'X-VS' => null,
         // Max. 10 znaků - Celé číslo - Variabilní symbol
         'X-SS' => null,
@@ -98,8 +99,6 @@ class QRPlatba
         // Max. 16 znaků - Identifikátor platby pro příjemce.
         'RN' => null,
         // Max. 35 znaků - Jméno příjemce.
-        'PT' => null,
-        // Právě 3 znaky - Typ platby.
         'CRC32' => null,
         // Právě 8 znaků - Kontrolní součet - HEX.
         'NT' => null,
@@ -280,6 +279,13 @@ class QRPlatba
     {
         $this->spdKeys['AM'] = number_format($amount, 2, '.', '');
         $this->sidKeys['AM'] = number_format($amount, 2, '.', '');
+
+        return $this;
+    }
+
+    public function enableInstantPayment(): self
+    {
+        $this->spdKeys['PT'] = 'IP';
 
         return $this;
     }
@@ -721,14 +727,16 @@ class QRPlatba
      */
     public function getQRCodeInstance(int $size = 300, int $margin = 10): QrCode
     {
-        return QrCode::create((string) $this)
-            ->setSize($size - ($margin * 2))
-            ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelMedium())
-            ->setMargin($margin)
-            ->setRoundBlockSizeMode(new RoundBlockSizeModeEnlarge())
-            ->setForegroundColor(new Color(0, 0, 0, 0))
-            ->setBackgroundColor(new Color(255, 255, 255, 0));
+        return new QrCode(
+            data: (string) $this,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+            size: $size - ($margin * 2),
+            margin: $margin,
+            roundBlockSizeMode: RoundBlockSizeMode::Enlarge,
+            foregroundColor: new Color(0, 0, 0, 0),
+            backgroundColor: new Color(255, 255, 255, 0),
+        );
     }
 
     /**
@@ -799,10 +807,11 @@ class QRPlatba
     private function getLabelInstance(): ?Label
     {
         if ($this->label !== null) {
-            return Label::create($this->label)
-                ->setAlignment(new LabelAlignmentLeft())
-                ->setFont(new OpenSans())
-                ->setTextColor(new Color(0, 0, 0, 0));
+            return new Label(
+                text: $this->label,
+                alignment: LabelAlignment::Left,
+                textColor: new Color(0, 0, 0, 0),
+            );
         }
 
         return null;
